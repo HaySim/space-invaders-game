@@ -81,7 +81,7 @@ bullet.setheading(90)
 bullet.shapesize(0.5, 0.5)
 bullet.hideturtle()
 
-bulletspeed = 50
+bulletspeed = 25
 
 # Define bullet state
 # ready - ready to fire 
@@ -107,6 +107,7 @@ def fire_bullet():
     # Declare bulletstate as global
     global bulletstate
     if bulletstate == "ready":
+        os.system("afplay laser.wav&")
         bulletstate = "fire"
         # Move the bullet to just above the player
         x = player.xcor()
@@ -116,7 +117,7 @@ def fire_bullet():
 
 def isCollision(t1, t2):
     distance = math.sqrt(math.pow(t1.xcor()-t2.xcor(),2)+math.pow(t1.ycor()-t2.ycor(),2))
-    if distance < 15:
+    if distance < 20:
         return True
     else:
         return False
@@ -157,6 +158,7 @@ while True:
 
         # Check for a collision between the bullet and the enemy
         if isCollision(bullet, enemy):
+            os.system("afplay explosion.wav&")
             # Reset the bullet
             bullet.hideturtle()
             bulletstate = "ready"
@@ -172,6 +174,7 @@ while True:
             score_pen.write(scorestring, False, align = "left", font = ("Arial", 14, "normal"))
 
         if isCollision(player, enemy):
+            os.system("afplay explosion.wav&")
             player.hideturtle()
             enemy.hideturtle()
             print ("Game Over")
@@ -187,7 +190,5 @@ while True:
     if bullet.ycor() > 275:
         bullet.hideturtle()
         bulletstate = "ready"
-
-
 
 delay = input("Press enter to finish.")
