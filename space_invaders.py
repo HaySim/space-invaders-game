@@ -10,8 +10,8 @@ wn.title("Space Invaders")
 wn.bgpic("space_invaders_background.gif")
 
 # Register the shapes
-turtle.register_shape("Invader.gif")
-turtle.register_shape("Player.gif")
+wn.register_shape("Invader.gif")
+wn.register_shape("Player.gif")
 
 # Draw border
 border_pen = turtle.Turtle()
@@ -35,7 +35,7 @@ score_pen.speed(0)
 score_pen.color("white")
 score_pen.penup()
 score_pen.setposition(-290, 280)
-scorestring = "Score: %s" %score
+scorestring = "Score: {}".format(score)
 score_pen.write(scorestring, False, align = "left", font = ("Arial", 14, "normal"))
 score_pen.hideturtle()
 
@@ -47,8 +47,7 @@ player.penup()
 player.speed(0)
 player.setposition(0, -250)
 player.setheading(90)
-
-playerspeed = 15
+player.speed = 0
 
 # Choose a number of enemies
 number_of_enemies = 5
@@ -90,15 +89,16 @@ bulletstate = "ready"
 
 # Move the player left and right
 def move_left():
-    x = player.xcor()
-    x -= playerspeed
-    if x < -280:
-        x = - 280
-    player.setx(x)
+    player.speed = -15
 
 def move_right():
+    player.speed = 15
+
+def move_player():
     x = player.xcor()
-    x += playerspeed
+    x += player.speed
+    if x < -280:
+        x = - 280
     if x > 280:
         x = 280
     player.setx(x)
@@ -123,13 +123,15 @@ def isCollision(t1, t2):
         return False
 
 # Create keyboard bindings
-turtle.listen()
-turtle.onkey(move_left, "Left")
-turtle.onkey(move_right, "Right")
-turtle.onkey(fire_bullet, "space")
+wn.listen()
+wn.onkeypress(move_left, "Left")
+wn.onkeypress(move_right, "Right")
+wn.onkeypress(fire_bullet, "space")
 
 # Main game loop
 while True:
+
+    move_player()
 
     for enemy in enemies:
         # Move the enemy
@@ -169,7 +171,7 @@ while True:
             enemy.setposition(x, y)
             # Update the score
             score += 10
-            scorestring = "Score: %s" %score
+            scorestring = "Score: {}".format(score)
             score_pen.clear()
             score_pen.write(scorestring, False, align = "left", font = ("Arial", 14, "normal"))
 
@@ -190,5 +192,3 @@ while True:
     if bullet.ycor() > 275:
         bullet.hideturtle()
         bulletstate = "ready"
-
-delay = input("Press enter to finish.")
