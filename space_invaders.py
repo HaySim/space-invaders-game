@@ -33,7 +33,7 @@ player.setheading(90)
 playerspeed = 15
 
 # Choose a number of enemies
-number_of_enemies = 10
+number_of_enemies = 5
 # Create an empty list of enemies
 enemies = []
 
@@ -63,7 +63,7 @@ bullet.setheading(90)
 bullet.shapesize(0.5, 0.5)
 bullet.hideturtle()
 
-bulletspeed = 25
+bulletspeed = 50
 
 # Define bullet state
 # ready - ready to fire 
@@ -120,16 +120,22 @@ while True:
 
         # Move the enemy back and down
         if enemy.xcor() > 280:
-            y = enemy.ycor()
-            y -= 40
+            # Move all enemies down
+            for e in enemies:
+                y = e.ycor()
+                y -= 40
+                e.sety(y)
+            # Change enemy direction    
             enemyspeed *= -1
-            enemy.sety(y)
 
         if enemy.xcor() < -280:
-            y = enemy.ycor()
-            y -= 40
+            # Move all enemies down
+            for e in enemies:
+                y = e.ycor()
+                y -= 40
+                e.sety(y)
+            # Change enemy direction
             enemyspeed *= -1
-            enemy.sety(y)
 
         # Check for a collision between the bullet and the enemy
         if isCollision(bullet, enemy):
