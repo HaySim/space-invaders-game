@@ -8,6 +8,7 @@ wn = turtle.Screen()
 wn.bgcolor("black")
 wn.title("Space Invaders")
 wn.bgpic("space_invaders_background.gif")
+wn.tracer(0)
 
 # Register the shapes
 wn.register_shape("Invader.gif")
@@ -50,7 +51,7 @@ player.setheading(90)
 player.speed = 0
 
 # Choose a number of enemies
-number_of_enemies = 5
+number_of_enemies = 30
 # Create an empty list of enemies
 enemies = []
 
@@ -59,16 +60,25 @@ for i in range(number_of_enemies):
 # Create the enemy  
     enemies.append(turtle.Turtle())
 
+enemy_start_x = -225
+enemy_start_y = 250
+enemy_number = 0
+
 for enemy in enemies:
     enemy.color("red")
     enemy.shape("Invader.gif")
     enemy.penup()
     enemy.speed(0)
-    x = random.randint(-200, 200)
-    y = random.randint(100, 250)
+    x = enemy_start_x + (50 * enemy_number)
+    y = enemy_start_y 
     enemy.setposition(x, y)
+    # Update the enemy number
+    enemy_number += 1
+    if enemy_number == 10:
+        enemy_start_y -= 50
+        enemy_number = 0
 
-enemyspeed = 3
+enemyspeed = 0.2
 
 # Create the player's bullet
 bullet = turtle.Turtle()
@@ -80,7 +90,7 @@ bullet.setheading(90)
 bullet.shapesize(0.5, 0.5)
 bullet.hideturtle()
 
-bulletspeed = 25
+bulletspeed = 7
 
 # Define bullet state
 # ready - ready to fire 
@@ -89,10 +99,10 @@ bulletstate = "ready"
 
 # Move the player left and right
 def move_left():
-    player.speed = -15
+    player.speed = -3
 
 def move_right():
-    player.speed = 15
+    player.speed = 3
 
 def move_player():
     x = player.xcor()
@@ -130,7 +140,7 @@ wn.onkeypress(fire_bullet, "space")
 
 # Main game loop
 while True:
-
+    wn.update()
     move_player()
 
     for enemy in enemies:
@@ -166,9 +176,7 @@ while True:
             bulletstate = "ready"
             bullet.setposition(0, -400)
             # Reset the enemy
-            x = random.randint(-200, 200)
-            y = random.randint(100, 250)
-            enemy.setposition(x, y)
+            enemy.setposition(0, 10000)
             # Update the score
             score += 10
             scorestring = "Score: {}".format(score)
