@@ -2,6 +2,14 @@ import turtle
 import os
 import math
 import random
+import platform
+
+# If on Windows, you import winsound, or use Linux
+if platform.system() == "windows":
+    try:
+        import winsound
+    except:
+        print("Winsound module not available.")
 
 # Set up the screen
 wn = turtle.Screen()
@@ -117,7 +125,7 @@ def fire_bullet():
     # Declare bulletstate as global
     global bulletstate
     if bulletstate == "ready":
-        os.system("afplay laser.wav&")
+        play_sound("laser.wav")
         bulletstate = "fire"
         # Move the bullet to just above the player
         x = player.xcor()
@@ -132,11 +140,30 @@ def isCollision(t1, t2):
     else:
         return False
 
+def play_sound(sound_file, time = 0):
+    # Windows
+    if platform.system == "Windows":
+        winsound.Playsound(sound_file, winsound.SND_ASYNC)
+    # Linux
+    elif platform.system() == "Linux":
+        os.system("aplay -q {}&".format(sound_file))
+    # Mac
+    else:
+        os.system("afplay {}&".format(sound_file))
+
+    # Repeat sound
+    if time > 0:
+        turtle.ontimer(lambda: play_sound(sound_file, time), t = int(time * 1000))
+
+
 # Create keyboard bindings
 wn.listen()
 wn.onkeypress(move_left, "Left")
 wn.onkeypress(move_right, "Right")
 wn.onkeypress(fire_bullet, "space")
+
+# Play background music
+# play_sound("background.mp3", 20) #killall afplay in terminal to stop
 
 # Main game loop
 while True:
@@ -170,7 +197,7 @@ while True:
 
         # Check for a collision between the bullet and the enemy
         if isCollision(bullet, enemy):
-            os.system("afplay explosion.wav&")
+            play_sound("explosion.wav")
             # Reset the bullet
             bullet.hideturtle()
             bulletstate = "ready"
@@ -184,7 +211,7 @@ while True:
             score_pen.write(scorestring, False, align = "left", font = ("Arial", 14, "normal"))
 
         if isCollision(player, enemy):
-            os.system("afplay explosion.wav&")
+            play_sound("explosion.wav")
             player.hideturtle()
             enemy.hideturtle()
             print ("Game Over")
