@@ -3,6 +3,7 @@ import os
 import math
 import random
 import platform
+import tkinter as tk
 
 # If on Windows, you import winsound, or use Linux
 if platform.system() == "windows":
@@ -19,9 +20,13 @@ wn.bgpic("space_invaders_background.gif")
 wn.tracer(0)
 
 # Register the shapes
-wn.register_shape("Invader.gif")
+wn.register_shape("Invader.green.gif")
 wn.register_shape("Invader.yellow.gif")
 wn.register_shape("Invader.red.gif")
+wn.register_shape("Invader.purple.gif")
+wn.register_shape("Invader.blue.gif")
+wn.register_shape("Invader.pink.gif")
+wn.register_shape("Invader.orange.gif")
 wn.register_shape("Player.gif")
 
 # Draw border
@@ -76,10 +81,16 @@ number_of_enemies = 20
 # Create an empty list of enemies
 enemies = []
 
-# enemy wave direction. Create list of 1's of length three
-enemy_wave_dir = [1] * 3
+# Enemy wave direction
+enemy_wave_dir = [1] * 10
 enemy_wave_dir[0] = 1
 enemy_wave_dir[1] = 1
+enemy_wave_dir[2] = 1
+enemy_wave_dir[3] = 1
+enemy_wave_dir[4] = 1
+enemy_wave_dir[5] = 1
+enemy_wave_dir[6] = 1
+
 
 
 # Add enemies to the list
@@ -93,7 +104,7 @@ enemy_number = 0
 
 for enemy in enemies:
     enemy.color("green")
-    enemy.shape("Invader.gif")
+    enemy.shape("Invader.green.gif")
     enemy.penup()
     enemy.speed(0)
     x = enemy_start_x + (50 * enemy_number)
@@ -105,7 +116,7 @@ for enemy in enemies:
         enemy_start_y -= 50
         enemy_number = 0
 
-enemyspeed = 0.2
+enemyspeed = 0.1
 
 # Create the player's bullet
 bullet = turtle.Turtle()
@@ -118,7 +129,7 @@ bullet.shapesize(0.5, 0.5)
 bullet.hideturtle()
 bullet.speed
 
-bulletspeed = 7
+bulletspeed = 8
 
 # Define bullet state
 # ready - ready to fire 
@@ -196,11 +207,14 @@ while True:
         #x += enemyspeed
         enemy_dir = enemy_wave_dir[0]
         if enemy.color() == ('yellow', 'yellow'):
-            x += 0.2
+            x += 0.1
             enemy_dir = enemy_wave_dir[1]
         elif enemy.color() == ('red', 'red'):
-            x += 0.2
+            x += 0.1
             enemy_dir = enemy_wave_dir[2]
+        elif enemy.color() == ('purple', 'purple'):
+            x += 0.1
+            enemy_dir = enemy_wave_dir[3]
         x += enemy_dir    
         enemy.setx(x)
 
@@ -217,7 +231,9 @@ while True:
             if enemy.color() == ('yellow', 'yellow'):
                 enemy_wave_dir[1] *= -1
             elif enemy.color() == ('red', 'red'):
-                enemy_wave_dir[2] *= -1 
+                enemy_wave_dir[2] *= -1
+            elif enemy.color() == ('purple', 'purple'):
+                enemy_wave_dir[3] *= -1
             else:
                 enemy_wave_dir[0] *= -1
 
@@ -234,6 +250,8 @@ while True:
                 enemy_wave_dir[1] *= -1
             elif enemy.color() == ('red', 'red'):
                 enemy_wave_dir[2] *= -1 
+            elif enemy.color() == ('purple', 'purple'):
+                enemy_wave_dir[3] *= -1
             else:
                 enemy_wave_dir[0] *= -1
 
@@ -260,7 +278,7 @@ while True:
             high_score_pen.write(scorestring, False, align = "right", font = ("Courier", 14, "normal"))
 
             # Adding yellow enemies
-            if score == 80:
+            if score == 30:
                 enemy_number = 0
                 enemy_start_x = -225
                 enemy_start_y = 250
@@ -281,7 +299,7 @@ while True:
                     enemies.append(an_enemy)
 
             # Adding red enemies
-            if score == 180:
+            if score == 60:
                 enemy_number = 0
                 enemy_start_x = -225
                 enemy_start_y = 250
@@ -300,11 +318,97 @@ while True:
                         enemy_start_y -= 50
                         enemy_number = 0
                     enemies.append(an_enemy)
+
+            # Adding purple enemies
+            if score == 90:
+                enemy_number = 0
+                enemy_start_x = -225
+                enemy_start_y = 250
+                for i in range(20):
+                    an_enemy = turtle.Turtle()
+                    an_enemy.color("purple")
+                    an_enemy.shape("Invader.purple.gif")
+                    an_enemy.penup()
+                    an_enemy.speed(0)
+                    x = enemy_start_x + (50 * enemy_number)
+                    y = enemy_start_y 
+                    an_enemy.setposition(x, y)
+                    # Update the enemy number
+                    enemy_number += 1
+                    if enemy_number == 10:
+                        enemy_start_y -= 50
+                        enemy_number = 0
+                    enemies.append(an_enemy)
+
+            # Adding blue enemies
+            if score == 120:
+                enemy_number = 0
+                enemy_start_x = -225
+                enemy_start_y = 250
+                for i in range(20):
+                    an_enemy = turtle.Turtle()
+                    an_enemy.color("blue")
+                    an_enemy.shape("Invader.blue.gif")
+                    an_enemy.penup()
+                    an_enemy.speed(0)
+                    x = enemy_start_x + (50 * enemy_number)
+                    y = enemy_start_y 
+                    an_enemy.setposition(x, y)
+                    # Update the enemy number
+                    enemy_number += 1
+                    if enemy_number == 10:
+                        enemy_start_y -= 50
+                        enemy_number = 0
+                    enemies.append(an_enemy)
+
+            # Adding pink enemies
+            if score == 150:
+                enemy_number = 0
+                enemy_start_x = -225
+                enemy_start_y = 250
+                for i in range(20):
+                    an_enemy = turtle.Turtle()
+                    an_enemy.color("pink")
+                    an_enemy.shape("Invader.pink.gif")
+                    an_enemy.penup()
+                    an_enemy.speed(0)
+                    x = enemy_start_x + (50 * enemy_number)
+                    y = enemy_start_y 
+                    an_enemy.setposition(x, y)
+                    # Update the enemy number
+                    enemy_number += 1
+                    if enemy_number == 10:
+                        enemy_start_y -= 50
+                        enemy_number = 0
+                    enemies.append(an_enemy) 
+
+            # Adding orange enemies
+            if score == 180:
+                enemy_number = 0
+                enemy_start_x = -225
+                enemy_start_y = 250
+                for i in range(20):
+                    an_enemy = turtle.Turtle()
+                    an_enemy.color("orange")
+                    an_enemy.shape("Invader.orange.gif")
+                    an_enemy.penup()
+                    an_enemy.speed(0)
+                    x = enemy_start_x + (50 * enemy_number)
+                    y = enemy_start_y 
+                    an_enemy.setposition(x, y)
+                    # Update the enemy number
+                    enemy_number += 1
+                    if enemy_number == 10:
+                        enemy_start_y -= 50
+                        enemy_number = 0
+                    enemies.append(an_enemy)       
             
         if isCollision(player, enemy):
             play_sound("explosion.wav")
             player.hideturtle()
             enemy.hideturtle()
+            print ("Game Over")
+            break
 
     # Move the bullet
     if bulletstate == "fire":
