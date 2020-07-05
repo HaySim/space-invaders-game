@@ -7,6 +7,9 @@ import tkinter as tk
 
 MAX_STEPS = 220
 
+ENEMY_COLOURS = ["green", "red", "purple", "yellow", "blue", "orange", "pink"]
+enemy_colour_index = 0
+
 # If on Windows, you import winsound, or use Linux
 if platform.system() == "windows":
     try:
@@ -91,7 +94,15 @@ enemy_wave_moves = []
 enemies2 = []
 
 # Create an enemy and add it to list of enemies
-def create_enemy_wave(enemies, enemy_wave_dir, enemy_wave_moves, colour):
+def create_enemy_wave(enemies, enemy_wave_dir, enemy_wave_moves):
+    global ENEMY_COLOURS
+    global enemy_colour_index
+
+    colour = ENEMY_COLOURS[enemy_colour_index]
+    enemy_colour_index += 1
+    if enemy_colour_index > len(ENEMY_COLOURS) - 1:
+        enemy_colour_index = 0
+
     enemy_start_x = -280#-225
     enemy_start_y = 250
     enemy_number = 0
@@ -114,7 +125,7 @@ def create_enemy_wave(enemies, enemy_wave_dir, enemy_wave_moves, colour):
 
     return enemies, enemy_wave_dir, enemy_wave_moves
         
-enemies2, enemy_wave_dir, enemy_wave_moves = create_enemy_wave(enemies2, enemy_wave_dir, enemy_wave_moves, "green")
+enemies2, enemy_wave_dir, enemy_wave_moves = create_enemy_wave(enemies2, enemy_wave_dir, enemy_wave_moves)
 
 enemyspeed = 0.1
 
@@ -167,7 +178,7 @@ def fire_bullet():
 
 def isCollision(t1, t2):
     distance = math.sqrt(math.pow(t1.xcor()-t2.xcor(),2)+math.pow(t1.ycor()-t2.ycor(),2))
-    if distance < 20:
+    if distance < 30:
         return True
     else:
         return False
@@ -187,7 +198,6 @@ def play_sound(sound_file, time = 0):
     if time > 0:
         turtle.ontimer(lambda: play_sound(sound_file, time), t = int(time * 1000))
 
-
 # Create keyboard bindings
 wn.listen()
 wn.onkeypress(move_left, "Left")
@@ -197,6 +207,7 @@ wn.onkeypress(fire_bullet, "space")
 # Play background music
 # play_sound("background.mp3", 20) #killall afplay in terminal to stop
 
+break_game_over = False
 # Main game loop
 while True:
     wn.update()
@@ -207,7 +218,6 @@ while True:
         for enemy in enemies2[i]:
             x = enemy.xcor()
 
-            
             # Speed up the enemies in each wave as theirs numbers decrease
             speed_up = (10 - len(enemies2[i]))
             if speed_up >= 1: speed_up = 0.5
@@ -225,10 +235,9 @@ while True:
             
             # Change direction
 
-            #if enemy.xcor() > 280:
             if enemy_wave_moves[i] > MAX_STEPS:
                 for e in enemies2[i]:
-                    e.sety(e.ycor() - 40)
+                    e.sety(e.ycor() - 90)
                 enemy_wave_dir[i] *= -1
 
                 enemy_wave_moves[i] = 0
@@ -236,20 +245,25 @@ while True:
             #if enemy.xcor() < -280:
             if enemy_wave_moves[i] < -MAX_STEPS:
                 for e in enemies2[i]:
-                    e.sety(e.ycor() - 40) 
+                    e.sety(e.ycor() - 90) 
                 enemy_wave_dir[i] *= -1 
 
                 enemy_wave_moves[i] = 0
 
-            if isCollision(player, enemy):
-                play_sound("explosion.wav")
-                player.hideturtle()
-                enemy.hideturtle()
-                print ("Game Over")
-                break  
-
+            if (isCollision(player, enemy)) or (enemy.ycor() < -250):
+                # play_sound("explosion.wav")
+                # player.hideturtle()
+                # enemy.hideturtle()
+                # print ("Game Over")
+                break_game_over = True
+                break
+                
         # Increase moves by either 1 or -1 depending on direction
         enemy_wave_moves[i] += enemy_wave_dir[i]
+
+        # Reset game on game over
+        if break_game_over:
+            break
 
     # Move the bullet
     if bulletstate == "fire":
@@ -280,22 +294,38 @@ while True:
                     score_pen.clear()
                     score_pen.write(scorestring, False, align = "left", font = ("Courier", 14, "normal"))
 
-                    high_score += 10
-                    scorestring = "High Score: {}".format(score)
-                    high_score_pen.clear()
-                    high_score_pen.write(scorestring, False, align = "right", font = ("Courier", 14, "normal"))
+                    if score > high_score:
+                        high_score += 10
+                        scorestring = "High Score: {}".format(score)
+                        high_score_pen.clear()
+                        high_score_pen.write(scorestring, False, align = "right", font = ("Courier", 14, "normal"))
 
                     # Add new wave when player reaches a score that is a multiple of 50
                     if score % 50 == 0:
-                        enemies2, enemy_wave_dir, enemy_wave_moves = create_enemy_wave(enemies2, enemy_wave_dir, enemy_wave_moves, "green")
+                        enemies2, enemy_wave_dir, enemy_wave_moves = create_enemy_wave(enemies2, enemy_wave_dir, enemy_wave_moves)
 
     # Check to see if the bullet has gone to the top
     if bullet.ycor() > 275:
         bullet.hideturtle()
         bulletstate = "ready"
 
-# To Do:
-# 1) Spawn different coloured enemies. Perhaps have a list and choose 'next' colour
-# 2) Implement 'game over' i.e. when enemy reaches the player's 'ground'
-# 3) Implement abiliy to restart game after game over
-# 4) Save high score in text file and load it if textfile exists at start of game
+    if break_game_over:
+        score = 0
+        scorestring = "Score: {}".format(score)
+        score_pen.clear()
+        score_pen.write(scorestring, False, align = "left", font = ("Courier", 14, "normal"))
+        break_game_over = False
+
+        for enemy_list2 in enemies2:
+            print(len(enemy_list2))
+            for enemy in enemy_list2:
+                enemy.clear()
+                enemy.hideturtle()
+                enemy.setposition(0, -1000000)
+
+        enemies2 = []
+        enemy_wave_dir = []
+        enemy_wave_moves = []
+        enemy_colour_index = 0
+
+        enemies2, enemy_wave_dir, enemy_wave_moves = create_enemy_wave(enemies2, enemy_wave_dir, enemy_wave_moves)
