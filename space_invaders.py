@@ -5,6 +5,8 @@ import random
 import platform
 import tkinter as tk
 
+MAX_STEPS = 220
+
 # If on Windows, you import winsound, or use Linux
 if platform.system() == "windows":
     try:
@@ -76,45 +78,43 @@ player.setheading(90)
 player.speed = 0
 
 # Choose a number of enemies
-number_of_enemies = 20
+number_of_enemies = 10
 
 # Create an empty list of enemies
 enemies = []
 
 # Enemy wave direction
-enemy_wave_dir = [1] * 10
-enemy_wave_dir[0] = 1
-enemy_wave_dir[1] = 1
-enemy_wave_dir[2] = 1
-enemy_wave_dir[3] = 1
-enemy_wave_dir[4] = 1
-enemy_wave_dir[5] = 1
-enemy_wave_dir[6] = 1
+enemy_wave_dir = []
 
+enemy_wave_moves = []
 
+enemies2 = []
 
-# Add enemies to the list
-for i in range(number_of_enemies):
-# Create the enemy  
-    enemies.append(turtle.Turtle())
+# Create an enemy and add it to list of enemies
+def create_enemy_wave(enemies, enemy_wave_dir, enemy_wave_moves, colour):
+    enemy_start_x = -280#-225
+    enemy_start_y = 250
+    enemy_number = 0
+    enemy_list = []
+    for i in range(10):
+        enemy = turtle.Turtle()
+        enemy.color(colour)
+        enemy.shape("Invader." + colour + '.gif')
+        enemy.penup()
+        enemy.speed(0)
+        x = enemy_start_x + (50 * enemy_number)
+        y = enemy_start_y
+        enemy.setposition(x, y)
+        enemy_number += 1
+        enemy_list.append(enemy)
+    enemies.append(enemy_list)
 
-enemy_start_x = -225
-enemy_start_y = 250
-enemy_number = 0
+    enemy_wave_dir.append(1)
+    enemy_wave_moves.append(0)
 
-for enemy in enemies:
-    enemy.color("green")
-    enemy.shape("Invader.green.gif")
-    enemy.penup()
-    enemy.speed(0)
-    x = enemy_start_x + (50 * enemy_number)
-    y = enemy_start_y 
-    enemy.setposition(x, y)
-    # Update the enemy number
-    enemy_number += 1
-    if enemy_number == 10:
-        enemy_start_y -= 50
-        enemy_number = 0
+    return enemies, enemy_wave_dir, enemy_wave_moves
+        
+enemies2, enemy_wave_dir, enemy_wave_moves = create_enemy_wave(enemies2, enemy_wave_dir, enemy_wave_moves, "green")
 
 enemyspeed = 0.1
 
@@ -128,6 +128,7 @@ bullet.setheading(90)
 bullet.shapesize(0.5, 0.5)
 bullet.hideturtle()
 bullet.speed
+bullet.setposition(0, -250)
 
 bulletspeed = 8
 
@@ -201,214 +202,54 @@ while True:
     wn.update()
     move_player()
 
-    for enemy in enemies:
-        # Move the enemy
-        x = enemy.xcor()
-        #x += enemyspeed
-        enemy_dir = enemy_wave_dir[0]
-        if enemy.color() == ('yellow', 'yellow'):
-            x += 0.1
-            enemy_dir = enemy_wave_dir[1]
-        elif enemy.color() == ('red', 'red'):
-            x += 0.1
-            enemy_dir = enemy_wave_dir[2]
-        elif enemy.color() == ('purple', 'purple'):
-            x += 0.1
-            enemy_dir = enemy_wave_dir[3]
-        x += enemy_dir    
-        enemy.setx(x)
+    # Move enemy
+    for i in range(len(enemies2)):
+        for enemy in enemies2[i]:
+            x = enemy.xcor()
 
-        # Move the enemy back and down
-        if enemy.xcor() > 280:
-            # Move all enemies down
-            for e in enemies:
-                if e.color() == enemy.color():
-                    y = e.ycor()
-                    y -= 40
-                    e.sety(y)
-            # Change enemy direction    
-            # enemyspeed *= -1
-            if enemy.color() == ('yellow', 'yellow'):
-                enemy_wave_dir[1] *= -1
-            elif enemy.color() == ('red', 'red'):
-                enemy_wave_dir[2] *= -1
-            elif enemy.color() == ('purple', 'purple'):
-                enemy_wave_dir[3] *= -1
-            else:
-                enemy_wave_dir[0] *= -1
-
-        if enemy.xcor() < -280:
-            # Move all enemies down
-            for e in enemies:
-                if e.color() == enemy.color():
-                    y = e.ycor()
-                    y -= 40
-                    e.sety(y)
-            # Change enemy direction
-            # enemyspeed *= -1
-            if enemy.color() == ('yellow', 'yellow'):
-                enemy_wave_dir[1] *= -1
-            elif enemy.color() == ('red', 'red'):
-                enemy_wave_dir[2] *= -1 
-            elif enemy.color() == ('purple', 'purple'):
-                enemy_wave_dir[3] *= -1
-            else:
-                enemy_wave_dir[0] *= -1
-
-        # Check for a collision between the bullet and the enemy
-        if isCollision(bullet, enemy):
-            play_sound("explosion.wav")
-            # Reset the bullet
-            bullet.hideturtle()
-            bulletstate = "ready"
-            bullet.setposition(0, -400)
-
-            # Reset the enemy
-            enemy.setposition(0, 10000)
-
-            # Update the score
-            score += 10
-            scorestring = "Score: {}".format(score)
-            score_pen.clear()
-            score_pen.write(scorestring, False, align = "left", font = ("Courier", 14, "normal"))
-
-            high_score += 10
-            scorestring = "High Score: {}".format(score)
-            high_score_pen.clear()
-            high_score_pen.write(scorestring, False, align = "right", font = ("Courier", 14, "normal"))
-
-            # Adding yellow enemies
-            if score == 30:
-                enemy_number = 0
-                enemy_start_x = -225
-                enemy_start_y = 250
-                for i in range(20):
-                    an_enemy = turtle.Turtle()
-                    an_enemy.color("yellow")
-                    an_enemy.shape("Invader.yellow.gif")
-                    an_enemy.penup()
-                    an_enemy.speed(0)
-                    x = enemy_start_x + (50 * enemy_number)
-                    y = enemy_start_y 
-                    an_enemy.setposition(x, y)
-                    # Update the enemy number
-                    enemy_number += 1
-                    if enemy_number == 10:
-                        enemy_start_y -= 50
-                        enemy_number = 0
-                    enemies.append(an_enemy)
-
-            # Adding red enemies
-            if score == 60:
-                enemy_number = 0
-                enemy_start_x = -225
-                enemy_start_y = 250
-                for i in range(20):
-                    an_enemy = turtle.Turtle()
-                    an_enemy.color("red")
-                    an_enemy.shape("Invader.red.gif")
-                    an_enemy.penup()
-                    an_enemy.speed(0)
-                    x = enemy_start_x + (50 * enemy_number)
-                    y = enemy_start_y 
-                    an_enemy.setposition(x, y)
-                    # Update the enemy number
-                    enemy_number += 1
-                    if enemy_number == 10:
-                        enemy_start_y -= 50
-                        enemy_number = 0
-                    enemies.append(an_enemy)
-
-            # Adding purple enemies
-            if score == 90:
-                enemy_number = 0
-                enemy_start_x = -225
-                enemy_start_y = 250
-                for i in range(20):
-                    an_enemy = turtle.Turtle()
-                    an_enemy.color("purple")
-                    an_enemy.shape("Invader.purple.gif")
-                    an_enemy.penup()
-                    an_enemy.speed(0)
-                    x = enemy_start_x + (50 * enemy_number)
-                    y = enemy_start_y 
-                    an_enemy.setposition(x, y)
-                    # Update the enemy number
-                    enemy_number += 1
-                    if enemy_number == 10:
-                        enemy_start_y -= 50
-                        enemy_number = 0
-                    enemies.append(an_enemy)
-
-            # Adding blue enemies
-            if score == 120:
-                enemy_number = 0
-                enemy_start_x = -225
-                enemy_start_y = 250
-                for i in range(20):
-                    an_enemy = turtle.Turtle()
-                    an_enemy.color("blue")
-                    an_enemy.shape("Invader.blue.gif")
-                    an_enemy.penup()
-                    an_enemy.speed(0)
-                    x = enemy_start_x + (50 * enemy_number)
-                    y = enemy_start_y 
-                    an_enemy.setposition(x, y)
-                    # Update the enemy number
-                    enemy_number += 1
-                    if enemy_number == 10:
-                        enemy_start_y -= 50
-                        enemy_number = 0
-                    enemies.append(an_enemy)
-
-            # Adding pink enemies
-            if score == 150:
-                enemy_number = 0
-                enemy_start_x = -225
-                enemy_start_y = 250
-                for i in range(20):
-                    an_enemy = turtle.Turtle()
-                    an_enemy.color("pink")
-                    an_enemy.shape("Invader.pink.gif")
-                    an_enemy.penup()
-                    an_enemy.speed(0)
-                    x = enemy_start_x + (50 * enemy_number)
-                    y = enemy_start_y 
-                    an_enemy.setposition(x, y)
-                    # Update the enemy number
-                    enemy_number += 1
-                    if enemy_number == 10:
-                        enemy_start_y -= 50
-                        enemy_number = 0
-                    enemies.append(an_enemy) 
-
-            # Adding orange enemies
-            if score == 180:
-                enemy_number = 0
-                enemy_start_x = -225
-                enemy_start_y = 250
-                for i in range(20):
-                    an_enemy = turtle.Turtle()
-                    an_enemy.color("orange")
-                    an_enemy.shape("Invader.orange.gif")
-                    an_enemy.penup()
-                    an_enemy.speed(0)
-                    x = enemy_start_x + (50 * enemy_number)
-                    y = enemy_start_y 
-                    an_enemy.setposition(x, y)
-                    # Update the enemy number
-                    enemy_number += 1
-                    if enemy_number == 10:
-                        enemy_start_y -= 50
-                        enemy_number = 0
-                    enemies.append(an_enemy)       
             
-        if isCollision(player, enemy):
-            play_sound("explosion.wav")
-            player.hideturtle()
-            enemy.hideturtle()
-            print ("Game Over")
-            break
+            # Speed up the enemies in each wave as theirs numbers decrease
+            speed_up = (10 - len(enemies2[i]))
+            if speed_up >= 1: speed_up = 0.5
+
+            speed_up = 0
+
+            # Move enemy but account for possible change in direction
+            if enemy_wave_dir[i] == 1:
+                x += 0.5 + speed_up
+
+            elif enemy_wave_dir[i] == -1:
+                x -= 0.5 + speed_up
+
+            enemy.setx(x)
+            
+            # Change direction
+
+            #if enemy.xcor() > 280:
+            if enemy_wave_moves[i] > MAX_STEPS:
+                for e in enemies2[i]:
+                    e.sety(e.ycor() - 40)
+                enemy_wave_dir[i] *= -1
+
+                enemy_wave_moves[i] = 0
+
+            #if enemy.xcor() < -280:
+            if enemy_wave_moves[i] < -MAX_STEPS:
+                for e in enemies2[i]:
+                    e.sety(e.ycor() - 40) 
+                enemy_wave_dir[i] *= -1 
+
+                enemy_wave_moves[i] = 0
+
+            if isCollision(player, enemy):
+                play_sound("explosion.wav")
+                player.hideturtle()
+                enemy.hideturtle()
+                print ("Game Over")
+                break  
+
+        # Increase moves by either 1 or -1 depending on direction
+        enemy_wave_moves[i] += enemy_wave_dir[i]
 
     # Move the bullet
     if bulletstate == "fire":
@@ -416,7 +257,45 @@ while True:
         y += bulletspeed
         bullet.sety(y)
 
+        for enemy_list in enemies2:
+            for enemy in enemy_list:
+                # Check for a collision between the bullet and the enemy
+                if isCollision(bullet, enemy):
+                    play_sound("explosion.wav")
+                    # Reset the bullet
+                    bullet.hideturtle()
+                    bulletstate = "ready"
+                    bullet.setposition(0, -400)
+
+                    # Reset the enemy
+                    enemy.clear()
+                    enemy.hideturtle()
+                    enemy.setposition(0, -1000000)
+                    enemy_list.remove(enemy)
+                    del enemy
+
+                    # Update the score
+                    score += 10
+                    scorestring = "Score: {}".format(score)
+                    score_pen.clear()
+                    score_pen.write(scorestring, False, align = "left", font = ("Courier", 14, "normal"))
+
+                    high_score += 10
+                    scorestring = "High Score: {}".format(score)
+                    high_score_pen.clear()
+                    high_score_pen.write(scorestring, False, align = "right", font = ("Courier", 14, "normal"))
+
+                    # Add new wave when player reaches a score that is a multiple of 50
+                    if score % 50 == 0:
+                        enemies2, enemy_wave_dir, enemy_wave_moves = create_enemy_wave(enemies2, enemy_wave_dir, enemy_wave_moves, "green")
+
     # Check to see if the bullet has gone to the top
     if bullet.ycor() > 275:
         bullet.hideturtle()
         bulletstate = "ready"
+
+# To Do:
+# 1) Spawn different coloured enemies. Perhaps have a list and choose 'next' colour
+# 2) Implement 'game over' i.e. when enemy reaches the player's 'ground'
+# 3) Implement abiliy to restart game after game over
+# 4) Save high score in text file and load it if textfile exists at start of game
